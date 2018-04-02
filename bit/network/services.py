@@ -19,6 +19,12 @@ class CryptoidAPI:
         r.raise_for_status()
         return r.json()
 
+    @classmethod
+    def get_transactions(cls, address):
+        r = requests.get(cls.MAIN_ENDPOINT, params={'q': 'lasttxs', 'a': address})
+        r.raise_for_status()
+        return [tx['hash'] for tx in r.json()]
+
 
 class InsightAPI:
     MAIN_ENDPOINT = ''
