@@ -7,9 +7,9 @@ with open('bit/__init__.py', 'r') as f:
             break
 
 setup(
-    name='bit',
+    name='ufobit',
     version=version,
-    description='Bitcoin made easy.',
+    description='UFO made easy.',
     long_description=open('README.rst', 'r').read(),
     author='Ofek Lev',
     author_email='ofekmeister@gmail.com',
@@ -20,6 +20,7 @@ setup(
     license='MIT',
 
     keywords=(
+        'ufo',
         'bitcoin',
         'cryptocurrency',
         'payments',
@@ -50,7 +51,7 @@ setup(
     packages=find_packages(),
     entry_points={
         'console_scripts': (
-            'bit = bit.cli:bit',
+            'ufobit = ufobit.cli:bit',
         ),
     },
 )
