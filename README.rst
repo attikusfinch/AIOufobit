@@ -1,4 +1,4 @@
-Bit: Bitcoin made easy.
+UFOBit: UFO made easy.
 =======================
 
 .. image:: https://img.shields.io/pypi/v/bit.svg?style=flat-square
@@ -28,7 +28,7 @@ effortless to use, and have readable source code. It is heavily inspired by
 
 .. code-block:: python
 
-    >>> from bit import Key
+    >>> from ufobit import Key
     >>>
     >>> my_key = Key(...)
     >>> my_key.get_balance('usd')
@@ -77,7 +77,7 @@ and Windows and supports Python 3.5+ and PyPy3.5-v5.7.1+. ``pip`` >= 8.1.2 is re
 
 .. code-block:: bash
 
-    $ pip install bit
+    $ pip install ufobit
 
 Documentation
 -------------
