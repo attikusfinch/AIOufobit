@@ -123,7 +123,7 @@ def sanitize_tx_data(unspents, outputs, fee, leftover, combine=True, message=Non
 
         for index, unspent in enumerate(unspents):
             total_in += unspent.amount
-            calculated_fee = estimate_tx_fee(len(unspents[:index + 1]), num_outputs, fee, compressed)
+            calculated_fee = 1000000  # 0.01 ufo
             total_out = sum_outputs + calculated_fee
 
             if total_in >= total_out:
