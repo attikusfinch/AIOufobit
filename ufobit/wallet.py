@@ -164,7 +164,7 @@ class PrivateKey(BaseKey):
         """
         return ufoshi_to_currency_cached(self.balance, currency)
 
-    def get_balance(self, currency='satoshi'):
+    def get_balance(self, currency='ufoshi'):
         """Fetches the current balance by calling
         :func:`~bit.PrivateKey.get_unspents` and returns it using
         :func:`~bit.PrivateKey.balance_as`.
