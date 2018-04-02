@@ -12,31 +12,37 @@ def set_service_timeout(seconds):
 
 
 class CryptoidAPI:
+    MAIN_ENDPOINT = 'https://chainz.cryptoid.info/{coin}/api.dws'
+    KEY = '52700acdf523'
 
     @classmethod
     def get_balance(cls, address):
-        r = requests.get(cls.MAIN_ENDPOINT, params={'q': 'getbalance', 'a': address})
+        r = requests.get(cls.MAIN_ENDPOINT, params={'q': 'getbalance', 'a': address, 'key': cls.KEY})
         r.raise_for_status()
         return r.json()
 
     @classmethod
     def get_transactions(cls, address):
-        r = requests.get(cls.MAIN_ENDPOINT, params={'q': 'lasttxs', 'a': address})
+        r = requests.get(cls.MAIN_ENDPOINT, params={'q': 'lasttxs', 'a': address, 'key': cls.KEY})
         r.raise_for_status()
         return [tx['hash'] for tx in r.json()]
 
     @classmethod
     def get_unspent(cls, address):
-        r = requests.get(cls.MAIN_ENDPOINT, params={'q': 'unspent', 'active': address})
+        r = requests.get(cls.MAIN_ENDPOINT, params={'q': 'unspent', 'active': address, 'key': cls.KEY})
         r.raise_for_status()
+        print(r.json())
         return [
             Unspent(tx['value'],
                     tx['confirmations'],
                     tx['script'],
-                    tx['tx_hash_big_endian'],
-                    tx['tx_output_n'])
+                    tx['tx_hash'],
+                    tx['tx_ouput_n'])  # sic! typo in api itself
             for tx in r.json()['unspent_outputs']
         ][::-1]
+
+class UFO(CryptoidAPI):
+    MAIN_ENDPOINT = 'https://chainz.cryptoid.info/ufo/api.dws'
 
 
 class InsightAPI:
