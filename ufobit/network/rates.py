@@ -107,6 +107,14 @@ class UFORates:
         rate = r.json()[0]['price_' + currency.lower()]
         return int(ONE / Decimal(rate) * BTC)
 
+    @classmethod
+    def usd_to_ufoshi(cls):
+        return cls.currency_to_ufoshi('usd')
+
+    @classmethod
+    def rub_to_ufoshi(cls):
+        return cls.currency_to_ufoshi('rub')
+
 
 class RatesAPI:
     """Each method converts exactly 1 unit of the currency to the equivalent
@@ -115,120 +123,13 @@ class RatesAPI:
     IGNORED_ERRORS = (requests.exceptions.ConnectionError,
                       requests.exceptions.Timeout)
 
-    USD_RATES = [UFORates.currency_to_ufoshi('usd')]
-    EUR_RATES = [UFORates.currency_to_ufoshi('eur')]
-    GBP_RATES = [UFORates.currency_to_ufoshi('gbp')]
-    JPY_RATES = [UFORates.currency_to_ufoshi('jpy')]
-    CNY_RATES = [UFORates.currency_to_ufoshi('cny')]
-    HKD_RATES = [UFORates.currency_to_ufoshi('hkd')]
-    CAD_RATES = [UFORates.currency_to_ufoshi('cad')]
-    AUD_RATES = [UFORates.currency_to_ufoshi('aud')]
-    NZD_RATES = [UFORates.currency_to_ufoshi('nzd')]
-    RUB_RATES = [UFORates.currency_to_ufoshi('rub')]
-    BRL_RATES = [UFORates.currency_to_ufoshi('brl')]
-    CHF_RATES = [UFORates.currency_to_ufoshi('chf')]
-    SEK_RATES = [UFORates.currency_to_ufoshi('sek')]
-    DKK_RATES = [UFORates.currency_to_ufoshi('dkk')]
-    ISK_RATES = [UFORates.currency_to_ufoshi('isk')]
-    PLN_RATES = [UFORates.currency_to_ufoshi('pln')]
-    KRW_RATES = [UFORates.currency_to_ufoshi('krw')]
-    CLP_RATES = [UFORates.currency_to_ufoshi('clp')]
-    SGD_RATES = [UFORates.currency_to_ufoshi('sgd')]
-    THB_RATES = [UFORates.currency_to_ufoshi('thb')]
-    TWD_RATES = [UFORates.currency_to_ufoshi('twd')]
+    USD_RATES = [UFORates.usd_to_ufoshi]
+    RUB_RATES = [UFORates.rub_to_ufoshi]
 
     @classmethod
     def usd_to_satoshi(cls):  # pragma: no cover
 
         for api_call in cls.USD_RATES:
-            try:
-                return api_call()
-            except cls.IGNORED_ERRORS:
-                pass
-
-        raise ConnectionError('All APIs are unreachable.')
-
-    @classmethod
-    def eur_to_satoshi(cls):  # pragma: no cover
-
-        for api_call in cls.EUR_RATES:
-            try:
-                return api_call()
-            except cls.IGNORED_ERRORS:
-                pass
-
-        raise ConnectionError('All APIs are unreachable.')
-
-    @classmethod
-    def gbp_to_satoshi(cls):  # pragma: no cover
-
-        for api_call in cls.GBP_RATES:
-            try:
-                return api_call()
-            except cls.IGNORED_ERRORS:
-                pass
-
-        raise ConnectionError('All APIs are unreachable.')
-
-    @classmethod
-    def jpy_to_satoshi(cls):  # pragma: no cover
-
-        for api_call in cls.JPY_RATES:
-            try:
-                return api_call()
-            except cls.IGNORED_ERRORS:
-                pass
-
-        raise ConnectionError('All APIs are unreachable.')
-
-    @classmethod
-    def cny_to_satoshi(cls):  # pragma: no cover
-
-        for api_call in cls.CNY_RATES:
-            try:
-                return api_call()
-            except cls.IGNORED_ERRORS:
-                pass
-
-        raise ConnectionError('All APIs are unreachable.')
-
-    @classmethod
-    def hkd_to_satoshi(cls):  # pragma: no cover
-
-        for api_call in cls.HKD_RATES:
-            try:
-                return api_call()
-            except cls.IGNORED_ERRORS:
-                pass
-
-        raise ConnectionError('All APIs are unreachable.')
-
-    @classmethod
-    def cad_to_satoshi(cls):  # pragma: no cover
-
-        for api_call in cls.CAD_RATES:
-            try:
-                return api_call()
-            except cls.IGNORED_ERRORS:
-                pass
-
-        raise ConnectionError('All APIs are unreachable.')
-
-    @classmethod
-    def aud_to_satoshi(cls):  # pragma: no cover
-
-        for api_call in cls.AUD_RATES:
-            try:
-                return api_call()
-            except cls.IGNORED_ERRORS:
-                pass
-
-        raise ConnectionError('All APIs are unreachable.')
-
-    @classmethod
-    def nzd_to_satoshi(cls):  # pragma: no cover
-
-        for api_call in cls.NZD_RATES:
             try:
                 return api_call()
             except cls.IGNORED_ERRORS:
@@ -247,154 +148,13 @@ class RatesAPI:
 
         raise ConnectionError('All APIs are unreachable.')
 
-    @classmethod
-    def brl_to_satoshi(cls):  # pragma: no cover
-
-        for api_call in cls.BRL_RATES:
-            try:
-                return api_call()
-            except cls.IGNORED_ERRORS:
-                pass
-
-        raise ConnectionError('All APIs are unreachable.')
-
-    @classmethod
-    def chf_to_satoshi(cls):  # pragma: no cover
-
-        for api_call in cls.CHF_RATES:
-            try:
-                return api_call()
-            except cls.IGNORED_ERRORS:
-                pass
-
-        raise ConnectionError('All APIs are unreachable.')
-
-    @classmethod
-    def sek_to_satoshi(cls):  # pragma: no cover
-
-        for api_call in cls.SEK_RATES:
-            try:
-                return api_call()
-            except cls.IGNORED_ERRORS:
-                pass
-
-        raise ConnectionError('All APIs are unreachable.')
-
-    @classmethod
-    def dkk_to_satoshi(cls):  # pragma: no cover
-
-        for api_call in cls.DKK_RATES:
-            try:
-                return api_call()
-            except cls.IGNORED_ERRORS:
-                pass
-
-        raise ConnectionError('All APIs are unreachable.')
-
-    @classmethod
-    def isk_to_satoshi(cls):  # pragma: no cover
-
-        for api_call in cls.ISK_RATES:
-            try:
-                return api_call()
-            except cls.IGNORED_ERRORS:
-                pass
-
-        raise ConnectionError('All APIs are unreachable.')
-
-    @classmethod
-    def pln_to_satoshi(cls):  # pragma: no cover
-
-        for api_call in cls.PLN_RATES:
-            try:
-                return api_call()
-            except cls.IGNORED_ERRORS:
-                pass
-
-        raise ConnectionError('All APIs are unreachable.')
-
-    @classmethod
-    def krw_to_satoshi(cls):  # pragma: no cover
-
-        for api_call in cls.KRW_RATES:
-            try:
-                return api_call()
-            except cls.IGNORED_ERRORS:
-                pass
-
-        raise ConnectionError('All APIs are unreachable.')
-
-    @classmethod
-    def clp_to_satoshi(cls):  # pragma: no cover
-
-        for api_call in cls.CLP_RATES:
-            try:
-                return api_call()
-            except cls.IGNORED_ERRORS:
-                pass
-
-        raise ConnectionError('All APIs are unreachable.')
-
-    @classmethod
-    def sgd_to_satoshi(cls):  # pragma: no cover
-
-        for api_call in cls.SGD_RATES:
-            try:
-                return api_call()
-            except cls.IGNORED_ERRORS:
-                pass
-
-        raise ConnectionError('All APIs are unreachable.')
-
-    @classmethod
-    def thb_to_satoshi(cls):  # pragma: no cover
-
-        for api_call in cls.THB_RATES:
-            try:
-                return api_call()
-            except cls.IGNORED_ERRORS:
-                pass
-
-        raise ConnectionError('All APIs are unreachable.')
-
-    @classmethod
-    def twd_to_satoshi(cls):  # pragma: no cover
-
-        for api_call in cls.TWD_RATES:
-            try:
-                return api_call()
-            except cls.IGNORED_ERRORS:
-                pass
-
-        raise ConnectionError('All APIs are unreachable.')
-
-
 EXCHANGE_RATES = {
     'satoshi': satoshi_to_satoshi,
     'ubtc': ubtc_to_satoshi,
     'mbtc': mbtc_to_satoshi,
     'btc': btc_to_satoshi,
     'usd': RatesAPI.usd_to_satoshi,
-    'eur': RatesAPI.eur_to_satoshi,
-    'gbp': RatesAPI.gbp_to_satoshi,
-    'jpy': RatesAPI.jpy_to_satoshi,
-    'cny': RatesAPI.cny_to_satoshi,
-    'cad': RatesAPI.cad_to_satoshi,
-    'aud': RatesAPI.aud_to_satoshi,
-    'nzd': RatesAPI.nzd_to_satoshi,
     'rub': RatesAPI.rub_to_satoshi,
-    'brl': RatesAPI.brl_to_satoshi,
-    'chf': RatesAPI.chf_to_satoshi,
-    'sek': RatesAPI.sek_to_satoshi,
-    'dkk': RatesAPI.dkk_to_satoshi,
-    'isk': RatesAPI.isk_to_satoshi,
-    'pln': RatesAPI.pln_to_satoshi,
-    'hkd': RatesAPI.hkd_to_satoshi,
-    'krw': RatesAPI.krw_to_satoshi,
-    'sgd': RatesAPI.sgd_to_satoshi,
-    'thb': RatesAPI.thb_to_satoshi,
-    'twd': RatesAPI.twd_to_satoshi,
-    'clp': RatesAPI.clp_to_satoshi
 }
 
 
