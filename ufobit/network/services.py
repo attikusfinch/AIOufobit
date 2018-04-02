@@ -23,15 +23,14 @@ class CryptoidAPI:
 
     @classmethod
     def get_transactions(cls, address):
-        r = requests.get(cls.MAIN_ENDPOINT, params={'q': 'lasttxs', 'a': address, 'key': cls.KEY})
+        r = requests.get(cls.MAIN_ENDPOINT, params={'q': 'multiaddr', 'active': address, 'key': cls.KEY})
         r.raise_for_status()
-        return [tx['hash'] for tx in r.json()]
+        return [tx['hash'] for tx in r.json()['txs']]
 
     @classmethod
     def get_unspent(cls, address):
         r = requests.get(cls.MAIN_ENDPOINT, params={'q': 'unspent', 'active': address, 'key': cls.KEY})
         r.raise_for_status()
-        print(r.json())
         return [
             Unspent(tx['value'],
                     tx['confirmations'],
@@ -40,6 +39,11 @@ class CryptoidAPI:
                     tx['tx_ouput_n'])  # sic! typo in api itself
             for tx in r.json()['unspent_outputs']
         ][::-1]
+
+
+    @classmethod
+    def broadcast_tx(cls, tx_hex):
+        raise NotImplementedError()
 
 
 class UFO(CryptoidAPI):
