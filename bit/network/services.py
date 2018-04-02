@@ -25,6 +25,19 @@ class CryptoidAPI:
         r.raise_for_status()
         return [tx['hash'] for tx in r.json()]
 
+    @classmethod
+    def get_unspent(cls, address):
+        r = requests.get(cls.MAIN_ENDPOINT, params={'q': 'unspent', 'active': address})
+        r.raise_for_status()
+        return [
+            Unspent(tx['value'],
+                    tx['confirmations'],
+                    tx['script'],
+                    tx['tx_hash_big_endian'],
+                    tx['tx_output_n'])
+            for tx in r.json()['unspent_outputs']
+        ][::-1]
+
 
 class InsightAPI:
     MAIN_ENDPOINT = ''
