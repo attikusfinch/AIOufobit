@@ -32,7 +32,7 @@ class CryptoidAPI:
         r = requests.get(cls.MAIN_ENDPOINT, params={'q': 'unspent', 'active': address, 'key': cls.KEY})
         r.raise_for_status()
         return [
-            Unspent(tx['value'],
+            Unspent(int(tx['value']),
                     tx['confirmations'],
                     tx['script'],
                     tx['tx_hash'],
