@@ -1,8 +1,8 @@
 from coincurve import verify_signature as _vs
 
-from bit.base58 import b58decode_check, b58encode_check
-from bit.crypto import ripemd160_sha256
-from bit.curve import x_to_y
+from ufobit.base58 import b58decode_check, b58encode_check
+from ufobit.crypto import ripemd160_sha256
+from ufobit.curve import x_to_y
 
 MAIN_PUBKEY_HASH = b'\x1b'
 MAIN_SCRIPT_HASH = b'\x05'

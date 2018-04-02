@@ -4,9 +4,9 @@ from multiprocessing import Event, Process, Queue, Value, cpu_count
 
 from coincurve import Context
 
-from bit.base58 import BASE58_ALPHABET, b58encode_check
-from bit.crypto import ECPrivateKey, ripemd160_sha256
-from bit.format import bytes_to_wif, public_key_to_address
+from ufobit.base58 import BASE58_ALPHABET, b58encode_check
+from ufobit.crypto import ECPrivateKey, ripemd160_sha256
+from ufobit.format import bytes_to_wif, public_key_to_address
 
 
 def generate_key_address_pair():  # pragma: no cover

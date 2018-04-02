@@ -1,13 +1,13 @@
 import json
 
-from bit.crypto import ECPrivateKey
-from bit.curve import Point
-from bit.format import (
+from ufobit.crypto import ECPrivateKey
+from ufobit.curve import Point
+from ufobit.format import (
     bytes_to_wif, public_key_to_address, public_key_to_coords, wif_to_bytes
 )
-from bit.network import NetworkAPI, get_fee_cached, satoshi_to_currency_cached
-from bit.network.meta import Unspent
-from bit.transaction import calc_txid, create_p2pkh_transaction, sanitize_tx_data
+from ufobit.network import NetworkAPI, get_fee_cached, satoshi_to_currency_cached
+from ufobit.network.meta import Unspent
+from ufobit.transaction import calc_txid, create_p2pkh_transaction, sanitize_tx_data
 
 
 def wif_to_key(wif):

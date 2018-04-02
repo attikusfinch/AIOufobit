@@ -1,7 +1,7 @@
 import requests
 
-from bit.network import currency_to_satoshi
-from bit.network.meta import Unspent
+from ufobit.network import currency_to_satoshi
+from ufobit.network.meta import Unspent
 
 DEFAULT_TIMEOUT = 10
 
@@ -40,6 +40,7 @@ class CryptoidAPI:
                     tx['tx_ouput_n'])  # sic! typo in api itself
             for tx in r.json()['unspent_outputs']
         ][::-1]
+
 
 class UFO(CryptoidAPI):
     MAIN_ENDPOINT = 'https://chainz.cryptoid.info/ufo/api.dws'
