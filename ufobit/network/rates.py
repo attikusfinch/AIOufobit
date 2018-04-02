@@ -98,6 +98,16 @@ def btc_to_satoshi():
     return BTC
 
 
+class UFORates:
+    MAIN_ENDPOINT = 'https://api.coinmarketcap.com/v1/ticker/uniform-fiscal-object/'
+
+    @classmethod
+    def currency_to_ufoshi(cls, currency):
+        r = requests.get(cls.MAIN_ENDPOINT, params={'convert': currency})
+        rate = r.json()[0]['price_' + currency.lower()]
+        return int(ONE / Decimal(rate) * BTC)
+
+
 class BitpayRates:
     SINGLE_RATE = 'https://bitpay.com/api/rates/'
 
@@ -291,27 +301,27 @@ class RatesAPI:
     IGNORED_ERRORS = (requests.exceptions.ConnectionError,
                       requests.exceptions.Timeout)
 
-    USD_RATES = [BitpayRates.usd_to_satoshi, BlockchainRates.usd_to_satoshi]
-    EUR_RATES = [BitpayRates.eur_to_satoshi, BlockchainRates.eur_to_satoshi]
-    GBP_RATES = [BitpayRates.gbp_to_satoshi, BlockchainRates.gbp_to_satoshi]
-    JPY_RATES = [BitpayRates.jpy_to_satoshi, BlockchainRates.jpy_to_satoshi]
-    CNY_RATES = [BitpayRates.cny_to_satoshi, BlockchainRates.cny_to_satoshi]
-    HKD_RATES = [BitpayRates.hkd_to_satoshi, BlockchainRates.hkd_to_satoshi]
-    CAD_RATES = [BitpayRates.cad_to_satoshi, BlockchainRates.cad_to_satoshi]
-    AUD_RATES = [BitpayRates.aud_to_satoshi, BlockchainRates.aud_to_satoshi]
-    NZD_RATES = [BitpayRates.nzd_to_satoshi, BlockchainRates.nzd_to_satoshi]
-    RUB_RATES = [BitpayRates.rub_to_satoshi, BlockchainRates.rub_to_satoshi]
-    BRL_RATES = [BitpayRates.brl_to_satoshi, BlockchainRates.brl_to_satoshi]
-    CHF_RATES = [BitpayRates.chf_to_satoshi, BlockchainRates.chf_to_satoshi]
-    SEK_RATES = [BitpayRates.sek_to_satoshi, BlockchainRates.sek_to_satoshi]
-    DKK_RATES = [BitpayRates.dkk_to_satoshi, BlockchainRates.dkk_to_satoshi]
-    ISK_RATES = [BitpayRates.isk_to_satoshi, BlockchainRates.isk_to_satoshi]
-    PLN_RATES = [BitpayRates.pln_to_satoshi, BlockchainRates.pln_to_satoshi]
-    KRW_RATES = [BitpayRates.krw_to_satoshi, BlockchainRates.krw_to_satoshi]
-    CLP_RATES = [BitpayRates.clp_to_satoshi, BlockchainRates.clp_to_satoshi]
-    SGD_RATES = [BitpayRates.sgd_to_satoshi, BlockchainRates.sgd_to_satoshi]
-    THB_RATES = [BitpayRates.thb_to_satoshi, BlockchainRates.thb_to_satoshi]
-    TWD_RATES = [BitpayRates.twd_to_satoshi, BlockchainRates.twd_to_satoshi]
+    USD_RATES = [UFORates.currency_to_ufoshi('usd')]
+    EUR_RATES = [UFORates.currency_to_ufoshi('eur')]
+    GBP_RATES = [UFORates.currency_to_ufoshi('gbp')]
+    JPY_RATES = [UFORates.currency_to_ufoshi('jpy')]
+    CNY_RATES = [UFORates.currency_to_ufoshi('cny')]
+    HKD_RATES = [UFORates.currency_to_ufoshi('hkd')]
+    CAD_RATES = [UFORates.currency_to_ufoshi('cad')]
+    AUD_RATES = [UFORates.currency_to_ufoshi('aud')]
+    NZD_RATES = [UFORates.currency_to_ufoshi('nzd')]
+    RUB_RATES = [UFORates.currency_to_ufoshi('rub')]
+    BRL_RATES = [UFORates.currency_to_ufoshi('brl')]
+    CHF_RATES = [UFORates.currency_to_ufoshi('chf')]
+    SEK_RATES = [UFORates.currency_to_ufoshi('sek')]
+    DKK_RATES = [UFORates.currency_to_ufoshi('dkk')]
+    ISK_RATES = [UFORates.currency_to_ufoshi('isk')]
+    PLN_RATES = [UFORates.currency_to_ufoshi('pln')]
+    KRW_RATES = [UFORates.currency_to_ufoshi('krw')]
+    CLP_RATES = [UFORates.currency_to_ufoshi('clp')]
+    SGD_RATES = [UFORates.currency_to_ufoshi('sgd')]
+    THB_RATES = [UFORates.currency_to_ufoshi('thb')]
+    TWD_RATES = [UFORates.currency_to_ufoshi('twd')]
 
     @classmethod
     def usd_to_satoshi(cls):  # pragma: no cover
