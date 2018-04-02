@@ -296,27 +296,10 @@ class NetworkAPI:
                       requests.exceptions.Timeout,
                       requests.exceptions.ReadTimeout)
 
-    GET_BALANCE_MAIN = [BitpayAPI.get_balance,
-                        SmartbitAPI.get_balance,
-                        BlockchainAPI.get_balance]
-    GET_TRANSACTIONS_MAIN = [BitpayAPI.get_transactions,  # Limit 1000
-                             SmartbitAPI.get_transactions,  # Limit 1000
-                             BlockchainAPI.get_transactions]  # No limit, requires multiple requests
-    GET_UNSPENT_MAIN = [BitpayAPI.get_unspent,  # No limit
-                        SmartbitAPI.get_unspent,  # Limit 1000
-                        BlockchainAPI.get_unspent]  # Limit 250
-    BROADCAST_TX_MAIN = [BitpayAPI.broadcast_tx,
-                         SmartbitAPI.broadcast_tx,  # Limit 5/minute
-                         BlockchainAPI.broadcast_tx]
-
-    GET_BALANCE_TEST = [BitpayAPI.get_balance_testnet,
-                        SmartbitAPI.get_balance_testnet]
-    GET_TRANSACTIONS_TEST = [BitpayAPI.get_transactions_testnet,  # Limit 1000
-                             SmartbitAPI.get_transactions_testnet]  # Limit 1000
-    GET_UNSPENT_TEST = [BitpayAPI.get_unspent_testnet,  # No limit
-                        SmartbitAPI.get_unspent_testnet]  # Limit 1000
-    BROADCAST_TX_TEST = [BitpayAPI.broadcast_tx_testnet,
-                         SmartbitAPI.broadcast_tx_testnet]  # Limit 5/minute
+    GET_BALANCE_MAIN = [UFO.get_balance]
+    GET_TRANSACTIONS_MAIN = [UFO.get_transactions]
+    GET_UNSPENT_MAIN = [UFO.get_unspent]
+    BROADCAST_TX_MAIN = [UFO.broadcast_tx]
 
     @classmethod
     def get_balance(cls, address):
@@ -329,24 +312,6 @@ class NetworkAPI:
         """
 
         for api_call in cls.GET_BALANCE_MAIN:
-            try:
-                return api_call(address)
-            except cls.IGNORED_ERRORS:
-                pass
-
-        raise ConnectionError('All APIs are unreachable.')
-
-    @classmethod
-    def get_balance_testnet(cls, address):
-        """Gets the balance of an address on the test network in satoshi.
-
-        :param address: The address in question.
-        :type address: ``str``
-        :raises ConnectionError: If all API services fail.
-        :rtype: ``int``
-        """
-
-        for api_call in cls.GET_BALANCE_TEST:
             try:
                 return api_call(address)
             except cls.IGNORED_ERRORS:
@@ -373,25 +338,6 @@ class NetworkAPI:
         raise ConnectionError('All APIs are unreachable.')
 
     @classmethod
-    def get_transactions_testnet(cls, address):
-        """Gets the ID of all transactions related to an address on the test
-        network.
-
-        :param address: The address in question.
-        :type address: ``str``
-        :raises ConnectionError: If all API services fail.
-        :rtype: ``list`` of ``str``
-        """
-
-        for api_call in cls.GET_TRANSACTIONS_TEST:
-            try:
-                return api_call(address)
-            except cls.IGNORED_ERRORS:
-                pass
-
-        raise ConnectionError('All APIs are unreachable.')
-
-    @classmethod
     def get_unspent(cls, address):
         """Gets all unspent transaction outputs belonging to an address.
 
@@ -410,25 +356,6 @@ class NetworkAPI:
         raise ConnectionError('All APIs are unreachable.')
 
     @classmethod
-    def get_unspent_testnet(cls, address):
-        """Gets all unspent transaction outputs belonging to an address on the
-        test network.
-
-        :param address: The address in question.
-        :type address: ``str``
-        :raises ConnectionError: If all API services fail.
-        :rtype: ``list`` of :class:`~bit.network.meta.Unspent`
-        """
-
-        for api_call in cls.GET_UNSPENT_TEST:
-            try:
-                return api_call(address)
-            except cls.IGNORED_ERRORS:
-                pass
-
-        raise ConnectionError('All APIs are unreachable.')
-
-    @classmethod
     def broadcast_tx(cls, tx_hex):  # pragma: no cover
         """Broadcasts a transaction to the blockchain.
 
@@ -439,31 +366,6 @@ class NetworkAPI:
         success = None
 
         for api_call in cls.BROADCAST_TX_MAIN:
-            try:
-                success = api_call(tx_hex)
-                if not success:
-                    continue
-                return
-            except cls.IGNORED_ERRORS:
-                pass
-
-        if success is False:
-            raise ConnectionError('Transaction broadcast failed, or '
-                                  'Unspents were already used.')
-
-        raise ConnectionError('All APIs are unreachable.')
-
-    @classmethod
-    def broadcast_tx_testnet(cls, tx_hex):  # pragma: no cover
-        """Broadcasts a transaction to the test network's blockchain.
-
-        :param tx_hex: A signed transaction in hex form.
-        :type tx_hex: ``str``
-        :raises ConnectionError: If all API services fail.
-        """
-        success = None
-
-        for api_call in cls.BROADCAST_TX_TEST:
             try:
                 success = api_call(tx_hex)
                 if not success:
