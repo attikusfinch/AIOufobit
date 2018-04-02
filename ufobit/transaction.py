@@ -110,9 +110,7 @@ def sanitize_tx_data(unspents, outputs, fee, leftover, combine=True, message=Non
     total_in = 0
 
     if combine:
-        # calculated_fee is in total satoshis.
-        calculated_fee = estimate_tx_fee(len(unspents), num_outputs, fee, compressed)
-        total_out = sum_outputs + calculated_fee
+        total_out = sum_outputs
         unspents = unspents.copy()
         total_in += sum(unspent.amount for unspent in unspents)
 
@@ -123,15 +121,15 @@ def sanitize_tx_data(unspents, outputs, fee, leftover, combine=True, message=Non
 
         for index, unspent in enumerate(unspents):
             total_in += unspent.amount
-            calculated_fee = 1000000  # 0.01 ufo
-            total_out = sum_outputs + calculated_fee
+            total_out = sum_outputs
 
             if total_in >= total_out:
                 break
 
         unspents[:] = unspents[:index + 1]
 
-    remaining = total_in - total_out
+    fee = 1000000
+    remaining = total_in - total_out - fee
 
     if remaining > 0:
         outputs.append((leftover, remaining))
