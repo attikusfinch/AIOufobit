@@ -11,6 +11,15 @@ def set_service_timeout(seconds):
     DEFAULT_TIMEOUT = seconds
 
 
+class CryptoidAPI:
+
+    @classmethod
+    def get_balance(cls, address):
+        r = requests.get(cls.MAIN_ENDPOINT, params={'q': 'getbalance', 'a': address})
+        r.raise_for_status()
+        return r.json()
+
+
 class InsightAPI:
     MAIN_ENDPOINT = ''
     MAIN_ADDRESS_API = ''
