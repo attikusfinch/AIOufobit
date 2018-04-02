@@ -5,7 +5,7 @@ from ufobit.curve import Point
 from ufobit.format import (
     bytes_to_wif, public_key_to_address, public_key_to_coords, wif_to_bytes
 )
-from ufobit.network import NetworkAPI, get_fee_cached, satoshi_to_currency_cached
+from ufobit.network import NetworkAPI, get_fee_cached, ufoshi_to_currency_cached
 from ufobit.network.meta import Unspent
 from ufobit.transaction import calc_txid, create_p2pkh_transaction, sanitize_tx_data
 
@@ -162,7 +162,7 @@ class PrivateKey(BaseKey):
         :type currency: ``str``
         :rtype: ``str``
         """
-        return satoshi_to_currency_cached(self.balance, currency)
+        return ufoshi_to_currency_cached(self.balance, currency)
 
     def get_balance(self, currency='satoshi'):
         """Fetches the current balance by calling
@@ -446,7 +446,7 @@ class PrivateKeyTestnet(BaseKey):
         :type currency: ``str``
         :rtype: ``str``
         """
-        return satoshi_to_currency_cached(self.balance, currency)
+        return ufoshi_to_currency_cached(self.balance, currency)
 
     def get_balance(self, currency='satoshi'):
         """Fetches the current balance by calling

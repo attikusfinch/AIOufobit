@@ -1,6 +1,6 @@
 import requests
 
-from ufobit.network import currency_to_satoshi
+from ufobit.network import currency_to_ufoshi
 from ufobit.network.meta import Unspent
 
 DEFAULT_TIMEOUT = 10
@@ -78,7 +78,7 @@ class InsightAPI:
         if r.status_code != 200:  # pragma: no cover
             raise ConnectionError
         return [
-            Unspent(currency_to_satoshi(tx['amount'], 'btc'),
+            Unspent(currency_to_ufoshi(tx['amount'], 'btc'),
                     tx['confirmations'],
                     tx['scriptPubKey'],
                     tx['txid'],
@@ -125,7 +125,7 @@ class BitpayAPI(InsightAPI):
         if r.status_code != 200:  # pragma: no cover
             raise ConnectionError
         return [
-            Unspent(currency_to_satoshi(tx['amount'], 'btc'),
+            Unspent(currency_to_ufoshi(tx['amount'], 'btc'),
                     tx['confirmations'],
                     tx['scriptPubKey'],
                     tx['txid'],
@@ -262,7 +262,7 @@ class SmartbitAPI:
         if r.status_code != 200:  # pragma: no cover
             raise ConnectionError
         return [
-            Unspent(currency_to_satoshi(tx['value'], 'btc'),
+            Unspent(currency_to_ufoshi(tx['value'], 'btc'),
                     tx['confirmations'],
                     tx['script_pub_key']['hex'],
                     tx['txid'],
@@ -276,7 +276,7 @@ class SmartbitAPI:
         if r.status_code != 200:  # pragma: no cover
             raise ConnectionError
         return [
-            Unspent(currency_to_satoshi(tx['value'], 'btc'),
+            Unspent(currency_to_ufoshi(tx['value'], 'btc'),
                     tx['confirmations'],
                     tx['script_pub_key']['hex'],
                     tx['txid'],

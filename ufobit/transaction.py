@@ -5,7 +5,7 @@ from itertools import islice
 from ufobit.crypto import double_sha256, sha256
 from ufobit.exceptions import InsufficientFunds
 from ufobit.format import address_to_public_key_hash
-from ufobit.network.rates import currency_to_satoshi_cached
+from ufobit.network.rates import currency_to_ufoshi_cached
 from ufobit.utils import (
     bytes_to_hex, chunk_data, hex_to_bytes, int_to_unknown_bytes
 )
@@ -89,7 +89,7 @@ def sanitize_tx_data(unspents, outputs, fee, leftover, combine=True, message=Non
 
     for i, output in enumerate(outputs):
         dest, amount, currency = output
-        outputs[i] = (dest, currency_to_satoshi_cached(amount, currency))
+        outputs[i] = (dest, currency_to_ufoshi_cached(amount, currency))
 
     if not unspents:
         raise ValueError('Transactions must have at least one unspent.')
