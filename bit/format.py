@@ -4,9 +4,9 @@ from bit.base58 import b58decode_check, b58encode_check
 from bit.crypto import ripemd160_sha256
 from bit.curve import x_to_y
 
-MAIN_PUBKEY_HASH = b'\x00'
+MAIN_PUBKEY_HASH = b'\x1b'
 MAIN_SCRIPT_HASH = b'\x05'
-MAIN_PRIVATE_KEY = b'\x80'
+MAIN_PRIVATE_KEY = b'\x9b'
 MAIN_BIP32_PUBKEY = b'\x04\x88\xb2\x1e'
 MAIN_BIP32_PRIVKEY = b'\x04\x88\xad\xe4'
 TEST_PUBKEY_HASH = b'\x6f'
