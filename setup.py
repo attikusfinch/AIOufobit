@@ -1,6 +1,6 @@
 from setuptools import find_packages, setup
 
-with open('bit/__init__.py', 'r') as f:
+with open('ufobit/__init__.py', 'r') as f:
     for line in f:
         if line.startswith('__version__'):
             version = line.strip().split('= ')[1].strip("'")
