@@ -42,10 +42,15 @@ class CryptoidAPI:
             for tx in r.json()['unspent_outputs']
         ][::-1]
 
-
     @classmethod
     def broadcast_tx(cls, tx_hex):
         raise NotImplementedError('Implement this method in the child class.')
+
+    @classmethod
+    def get_tx(cls, txid):
+        r = requests.get(cls.MAIN_ENDPOINT, params={'q': 'txinfo', 't': txid, 'key': cls.KEY})
+        r.raise_for_status()
+        return r.json()
 
 
 class UFO(CryptoidAPI):
