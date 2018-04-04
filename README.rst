@@ -1,55 +1,44 @@
 UFOBit: UFO made easy.
 =======================
 
-.. image:: https://img.shields.io/pypi/v/bit.svg?style=flat-square
-    :target: https://pypi.org/project/bit
+.. image:: https://img.shields.io/pypi/v/ufobit.svg?style=flat-square
+    :target: https://pypi.org/project/ufobit
 
-.. image:: https://img.shields.io/travis/ofek/bit.svg?branch=master&style=flat-square
-    :target: https://travis-ci.org/ofek/bit
-
-.. image:: https://img.shields.io/codecov/c/github/ofek/bit.svg?style=flat-square
-    :target: https://codecov.io/gh/ofek/bit
-
-.. image:: https://img.shields.io/pypi/pyversions/bit.svg?style=flat-square
-    :target: https://pypi.org/project/bit
+.. image:: https://img.shields.io/pypi/pyversions/ufobit.svg?style=flat-square
+    :target: https://pypi.org/project/ufobit
 
 .. image:: https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square
     :target: https://en.wikipedia.org/wiki/MIT_License
 
 -----
 
-Bit is Python's `fastest <https://ofek.github.io/bit/guide/intro.html#why-bit>`_
-Bitcoin library and was designed from the beginning to feel intuitive, be
+UFOBit is Python's `fastest <https://ofek.github.io/bit/guide/intro.html#why-bit>`_
+Uniform Fiscal Object library and was designed from the beginning to feel intuitive, be
 effortless to use, and have readable source code. It is heavily inspired by
 `Requests <https://github.com/requests/requests>`_ and
-`Keras <https://github.com/keras-team/keras>`_.
+`Keras <https://github.com/keras-team/keras>`_. Based on Ofek's Bit code.
 
-**Bit is so easy to use, in fact, you can do this:**
+**UFOBit is so easy to use, in fact, you can do this:**
 
 .. code-block:: python
 
     >>> from ufobit import Key
     >>>
     >>> my_key = Key(...)
-    >>> my_key.get_balance('usd')
-    '12.51'
+    >>> my_key.get_balance('ufo')
+    '378.623'
     >>>
-    >>> # Let's donate!
     >>> outputs = [
-    >>>     # Wikileaks
-    >>>     ('1HB5XMLmzFVj8ALj6mfBsbifRoD4miY36v', 0.0035, 'btc'),
-    >>>     # Internet Archive
-    >>>     ('1Archive1n2C579dMsAu3iC6tWzuQJz8dN', 190, 'jpy'),
-    >>>     # The Pirate Bay
-    >>>     ('129TQVAroeehD9fZpzK51NdZGQT4TqifbG', 3, 'eur'),
-    >>>     # xkcd
-    >>>     ('14Tr4HaKkKuC1Lmpr2YMAuYVZRWqAdRTcr', 2.5, 'cad')
+    >>>     ('Bz9rtnrFgjEC6Tv6CWpHz8EYFwJJJnwwjq', 25, 'ufo'),
+    >>>     ('Bu6rsw6ineEDUuH1Ph5CRzVqTt7s3skgDq', 50, 'satoshi'),
+    >>>     ('C5urCiXUyAnsrnKf7RaB2oBpdKxo51Vkpc', 0.02, 'usd'),
+    >>>     ('CFhf3Pk3T3MhFvAidRZJ9cxkJ8DurLYmo1', 1, 'rub'),
     >>> ]
     >>>
     >>> my_key.send(outputs)
-    '9f59f5c6757ec46fdc7440acbeb3920e614c8d1d247ac174eb6781b832710c1c'
+    'cfecc199a5c6e6bc24610366e8eda36571162e9e3f7c419f0b6095c257acc5fc'
 
-Here is the transaction `<https://blockchain.info/tx/9f59f5c6757ec46fdc7440acbeb3920e614c8d1d247ac174eb6781b832710c1c>`_.
+Here is the transaction `<https://chainz.cryptoid.info/ufo/tx.dws?1576204.htm>`_.
 
 Features
 --------
@@ -60,7 +49,7 @@ Features
 - Fully supports 25 different currencies
 - First class support for storing data in the blockchain
 - Deterministic signatures via RFC 6979
-- Access to the blockchain (and testnet chain) through multiple APIs for redundancy
+- Access to the blockchain through multiple APIs for redundancy
 - Exchange rate API, with optional caching
 - Optimal transaction fee API, with optional caching
 - Compressed public keys by default
@@ -83,7 +72,7 @@ Documentation
 -------------
 
 Docs are `hosted by Github Pages`_ and are automatically built and published
-by Travis after every successful commit to Bit's ``master`` branch.
+by Travis after every successful commit to UFOBit's ``master`` branch.
 
 Credits
 -------
@@ -93,7 +82,7 @@ Credits
 - `arubi`_ in #bitcoin for helping me understand transaction gotchas
 - `fuzeman`_ for bestowing me the name ``bit`` on the `Python Package Index`_
 
-.. _PyPI: https://pypi.org/project/bit
+.. _PyPI: https://pypi.org/project/ufobit
 .. _hosted by Github Pages: https://ofek.github.io/bit
 .. _Gregory Maxwell: https://github.com/gmaxwell
 .. _ECC: https://en.wikipedia.org/wiki/Elliptic_curve_cryptography
