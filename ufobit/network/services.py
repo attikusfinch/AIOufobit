@@ -1,3 +1,5 @@
+import re
+
 import requests
 
 from ufobit.network import currency_to_ufoshi
@@ -43,11 +45,25 @@ class CryptoidAPI:
 
     @classmethod
     def broadcast_tx(cls, tx_hex):
-        raise NotImplementedError()
+        raise NotImplementedError('Implement this method in the child class.')
 
 
 class UFO(CryptoidAPI):
     MAIN_ENDPOINT = 'https://chainz.cryptoid.info/ufo/api.dws'
+    MAIN_TX_PUSH_API = 'https://wallet.ufocoin.net/proxyAjax.php'
+    PUSHTX_KEY = '32098462904584238923572'
+
+    @classmethod
+    def broadcast_tx(cls, tx_hex):
+        r = requests.post(
+            cls.MAIN_TX_PUSH_API,
+            params={'module': 'sendrawtransaction', 'key': cls.PUSHTX_KEY},
+            data={'rawtx': tx_hex}
+        )
+        r.raise_for_status()
+        if r.text == '0':
+            return False
+        return re.search(r'[0-9a-f]{64}', r.text).group(0)
 
 
 class InsightAPI:
