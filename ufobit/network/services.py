@@ -1,4 +1,5 @@
 import re
+from functools import wraps
 
 import requests
 
@@ -6,6 +7,20 @@ from ufobit.network import currency_to_ufoshi
 from ufobit.network.meta import Unspent
 
 DEFAULT_TIMEOUT = 10
+config = {'api_key': None}
+
+
+class NoAPIKey(Exception):
+    pass
+
+
+def requires_key(f):
+    @wraps(f)
+    def decorator(*args, **kwargs):
+        if not config['api_key']:
+            raise NoAPIKey('Set ufobit.config["api_key"] to your CryptoID API key.')
+        return f(*args, **kwargs)
+    return decorator
 
 
 def set_service_timeout(seconds):
@@ -15,23 +30,25 @@ def set_service_timeout(seconds):
 
 class CryptoidAPI:
     MAIN_ENDPOINT = 'https://chainz.cryptoid.info/{coin}/api.dws'
-    KEY = '52700acdf523'
 
     @classmethod
+    @requires_key
     def get_balance(cls, address):
-        r = requests.get(cls.MAIN_ENDPOINT, params={'q': 'getbalance', 'a': address, 'key': cls.KEY})
+        r = requests.get(cls.MAIN_ENDPOINT, params={'q': 'getbalance', 'a': address, 'key': config['api_key']})
         r.raise_for_status()
         return r.json()
 
     @classmethod
+    @requires_key
     def get_transactions(cls, address):
-        r = requests.get(cls.MAIN_ENDPOINT, params={'q': 'multiaddr', 'active': address, 'key': cls.KEY})
+        r = requests.get(cls.MAIN_ENDPOINT, params={'q': 'multiaddr', 'active': address, 'key': config['api_key']})
         r.raise_for_status()
         return [tx['hash'] for tx in r.json()['txs']]
 
     @classmethod
+    @requires_key
     def get_unspent(cls, address):
-        r = requests.get(cls.MAIN_ENDPOINT, params={'q': 'unspent', 'active': address, 'key': cls.KEY})
+        r = requests.get(cls.MAIN_ENDPOINT, params={'q': 'unspent', 'active': address, 'key': config['api_key']})
         r.raise_for_status()
         return [
             Unspent(int(tx['value']),
@@ -47,8 +64,9 @@ class CryptoidAPI:
         raise NotImplementedError('Implement this method in the child class.')
 
     @classmethod
+    @requires_key
     def get_tx(cls, txid):
-        r = requests.get(cls.MAIN_ENDPOINT, params={'q': 'txinfo', 't': txid, 'key': cls.KEY})
+        r = requests.get(cls.MAIN_ENDPOINT, params={'q': 'txinfo', 't': txid, 'key': config['api_key']})
         r.raise_for_status()
         return r.json()
 
