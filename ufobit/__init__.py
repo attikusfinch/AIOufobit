@@ -5,4 +5,4 @@ from ufobit.network.services import set_service_timeout
 from ufobit.wallet import Key, PrivateKey, wif_to_key
 from ufobit.network.services import config
 
-__version__ = '0.4.4'
+__version__ = '0.4.5'
