@@ -3,8 +3,7 @@ from decimal import ROUND_DOWN
 from functools import wraps
 from time import time
 
-import requests
-
+from .api import API
 from ufobit.utils import Decimal
 
 DEFAULT_CACHE_TIME = 60
@@ -49,7 +48,7 @@ def ufo_to_ufoshi():
     return BTC
 
 
-class RatesAPI:
+class RatesAPI(API):
     """Each method converts exactly 1 unit of the currency to the equivalent
     number of ufoshi.
     """
@@ -57,26 +56,27 @@ class RatesAPI:
     MAIN_ENDPOINT = 'https://api.coinmarketcap.com/v1/ticker/uniform-fiscal-object/'
 
     @classmethod
-    def currency_to_ufoshi(cls, currency):
-        r = requests.get(cls.MAIN_ENDPOINT, params={'convert': currency})
-        rate = r.json()[0]['price_' + currency.lower()]
+    async def currency_to_ufoshi(self, currency):
+        response = await self.make_request(self.MAIN_ENDPOINT, params={'convert': currency})
+        response = await response.json()
+        rate = response[0]['price_' + currency.lower()]
         return int(ONE / Decimal(rate) * BTC)
 
     @classmethod
-    def usd_to_ufoshi(cls):
-        return cls.currency_to_ufoshi('usd')
+    def usd_to_ufoshi(self):
+        return self.currency_to_ufoshi('usd')
 
     @classmethod
-    def rub_to_ufoshi(cls):
-        return cls.currency_to_ufoshi('rub')
+    def rub_to_ufoshi(self):
+        return self.currency_to_ufoshi('rub')
 
     @classmethod
-    def btc_to_ufoshi(cls):
-        return cls.currency_to_ufoshi('btc')
+    def btc_to_ufoshi(self):
+        return self.currency_to_ufoshi('btc')
 
     @classmethod
-    def satoshi_to_ufoshi(cls):
-        return cls.currency_to_ufoshi('btc') / Decimal(BTC)
+    def satoshi_to_ufoshi(self):
+        return self.currency_to_ufoshi('btc') / Decimal(BTC)
 
 
 EXCHANGE_RATES = {

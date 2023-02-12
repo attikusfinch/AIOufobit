@@ -1,107 +1,104 @@
 import re
 from functools import wraps
 
-import requests
+import aiohttp
+from .api import API
 
-from ufobit.network import currency_to_ufoshi
-from ufobit.network.meta import Unspent
+from .meta import Unspent
 
 DEFAULT_TIMEOUT = 10
-config = {'api_key': None}
-
 
 class NoAPIKey(Exception):
     pass
-
-
-def requires_key(f):
-    @wraps(f)
-    def decorator(*args, **kwargs):
-        if not config['api_key']:
-            raise NoAPIKey('Set ufobit.config["api_key"] to your CryptoID API key.')
-        return f(*args, **kwargs)
-    return decorator
-
 
 def set_service_timeout(seconds):
     global DEFAULT_TIMEOUT
     DEFAULT_TIMEOUT = seconds
 
 
-class CryptoidAPI:
-    MAIN_ENDPOINT = 'https://chainz.cryptoid.info/{coin}/api.dws'
+class UFO(API):
+    MAIN_ENDPOINT = 'https://explorer.ufobject.com/api'
+    headers = {"Content-Type": "application/x-www-form-urlencoded"}
 
     @classmethod
-    @requires_key
-    def get_balance(cls, address):
-        r = requests.get(cls.MAIN_ENDPOINT, params={'q': 'getbalance', 'a': address, 'key': config['api_key']})
-        r.raise_for_status()
-        return r.json()
-
-    @classmethod
-    @requires_key
-    def get_transactions(cls, address):
-        r = requests.get(cls.MAIN_ENDPOINT, params={'q': 'multiaddr', 'active': address, 'key': config['api_key']})
-        r.raise_for_status()
-        return [tx['hash'] for tx in r.json()['txs']]
-
-    @classmethod
-    @requires_key
-    def get_unspent(cls, address):
-        r = requests.get(cls.MAIN_ENDPOINT, params={'q': 'unspent', 'active': address, 'key': config['api_key']})
-        r.raise_for_status()
-        return [
-            Unspent(int(tx['value']),
-                    tx['confirmations'],
-                    tx['script'],
-                    tx['tx_hash'],
-                    tx['tx_ouput_n'])  # sic! typo in api itself
-            for tx in r.json()['unspent_outputs']
-        ][::-1]
-
-    @classmethod
-    def broadcast_tx(cls, tx_hex):
-        raise NotImplementedError('Implement this method in the child class.')
-
-    @classmethod
-    @requires_key
-    def get_tx(cls, txid):
-        r = requests.get(cls.MAIN_ENDPOINT, params={'q': 'txinfo', 't': txid, 'key': config['api_key']})
-        r.raise_for_status()
-        return r.json()
-
-
-class UFO(CryptoidAPI):
-    MAIN_ENDPOINT = 'https://chainz.cryptoid.info/ufo/api.dws'
-    MAIN_TX_PUSH_API = 'https://wallet.ufocoin.net/proxyAjax.php'
-    PUSHTX_KEY = '32098462904584238923572'
-
-    @classmethod
-    def broadcast_tx(cls, tx_hex):
-        r = requests.post(
-            cls.MAIN_TX_PUSH_API,
-            params={'module': 'sendrawtransaction', 'key': cls.PUSHTX_KEY},
-            data={'rawtx': tx_hex}
+    async def broadcast_tx(self, tx_hex):
+        response = await self.make_request(
+            url=self.MAIN_ENDPOINT + '/tx/send',
+            method="post",
+            headers=self.headers,
+            data={'rawtx': tx_hex},
         )
-        r.raise_for_status()
-        if r.text == '0':
+        if response.status >= 400:
+            raise Exception(f"Error with status code: {response.status}")
+        
+        if (await response.text()) == '0':
             return False
-        return re.search(r'[0-9a-f]{64}', r.text).group(0)
+        
+        return (await response.json())['txid']
+
+    @classmethod
+    async def get_tx(self, txid):
+        response = await self.make_request(
+            url=self.MAIN_ENDPOINT + f'/tx/{txid}')
+        if response.status >= 400:
+            raise Exception(f"Error with status code: {response.status}")
+        if (await response.text()) == '0':
+            return False
+        return await response.json()
+
+    @classmethod
+    async def get_unspent(self, address):
+        response = await self.make_request(self.MAIN_ENDPOINT + f'/addr/{address}/utxo')
+        if response.status >= 400:
+            raise Exception(f"Error with status code: {response.status}")
+        return [
+                   Unspent(int(tx['satoshis']),
+                           tx['confirmations'],
+                           tx['scriptPubKey'],
+                           tx['txid'],
+                           tx['vout'],
+                           True if tx['address'][0] == 'U' else False)  # sic! typo in api itself
+                   for tx in (await response.json())
+               ][::-1]
+
+    @classmethod
+    async def get_balance(self, address):
+        response = await self.make_request(self.MAIN_ENDPOINT + f'/addr/{address}/balance')
+        if response.status >= 400:
+            raise Exception(f"Error with status code: {response.status}")
+        return await response.json()
+
+    @classmethod
+    async def get_transactions(self, address):
+        response = await self.make_request(self.MAIN_ENDPOINT + f'addr/{address}')
+        if response.status >= 400:
+            raise Exception(f"Error with status code: {response.status}")
+        return [tx['txid'] for tx in (await response.json())['txs']]
 
 
 class NetworkAPI:
     IGNORED_ERRORS = (ConnectionError,
-                      requests.exceptions.ConnectionError,
-                      requests.exceptions.Timeout,
-                      requests.exceptions.ReadTimeout)
+                      aiohttp.ClientConnectorError,
+                      aiohttp.ServerTimeoutError)
 
     GET_BALANCE_MAIN = [UFO.get_balance]
     GET_TRANSACTIONS_MAIN = [UFO.get_transactions]
     GET_UNSPENT_MAIN = [UFO.get_unspent]
     BROADCAST_TX_MAIN = [UFO.broadcast_tx]
+    GET_TX_MAIN = [UFO.get_tx]
 
     @classmethod
-    def get_balance(cls, address):
+    async def get_tx(self, txid):
+        for api_call in self.GET_TX_MAIN:
+            try:
+                return await api_call(txid)
+            except self.IGNORED_ERRORS:
+                pass
+
+        raise ConnectionError('All APIs are unreachable.')
+
+    @classmethod
+    async def get_balance(self, address):
         """Gets the balance of an address in satoshi.
 
         :param address: The address in question.
@@ -110,16 +107,16 @@ class NetworkAPI:
         :rtype: ``int``
         """
 
-        for api_call in cls.GET_BALANCE_MAIN:
+        for api_call in self.GET_BALANCE_MAIN:
             try:
-                return api_call(address)
-            except cls.IGNORED_ERRORS:
+                return await api_call(address)
+            except self.IGNORED_ERRORS:
                 pass
 
         raise ConnectionError('All APIs are unreachable.')
 
     @classmethod
-    def get_transactions(cls, address):
+    async def get_transactions(self, address):
         """Gets the ID of all transactions related to an address.
 
         :param address: The address in question.
@@ -128,16 +125,16 @@ class NetworkAPI:
         :rtype: ``list`` of ``str``
         """
 
-        for api_call in cls.GET_TRANSACTIONS_MAIN:
+        for api_call in self.GET_TRANSACTIONS_MAIN:
             try:
-                return api_call(address)
-            except cls.IGNORED_ERRORS:
+                return await api_call(address)
+            except self.IGNORED_ERRORS:
                 pass
 
         raise ConnectionError('All APIs are unreachable.')
 
     @classmethod
-    def get_unspent(cls, address):
+    async def get_unspent(self, address):
         """Gets all unspent transaction outputs belonging to an address.
 
         :param address: The address in question.
@@ -146,16 +143,16 @@ class NetworkAPI:
         :rtype: ``list`` of :class:`~bit.network.meta.Unspent`
         """
 
-        for api_call in cls.GET_UNSPENT_MAIN:
+        for api_call in self.GET_UNSPENT_MAIN:
             try:
-                return api_call(address)
-            except cls.IGNORED_ERRORS:
+                return await api_call(address)
+            except self.IGNORED_ERRORS:
                 pass
 
         raise ConnectionError('All APIs are unreachable.')
 
     @classmethod
-    def broadcast_tx(cls, tx_hex):  # pragma: no cover
+    async def broadcast_tx(self, tx_hex):  # pragma: no cover
         """Broadcasts a transaction to the blockchain.
 
         :param tx_hex: A signed transaction in hex form.
@@ -164,13 +161,13 @@ class NetworkAPI:
         """
         success = None
 
-        for api_call in cls.BROADCAST_TX_MAIN:
+        for api_call in self.BROADCAST_TX_MAIN:
             try:
-                success = api_call(tx_hex)
-                if not success:
+                call = await api_call(tx_hex)
+                if not call:
                     continue
-                return
-            except cls.IGNORED_ERRORS:
+                return call
+            except self.IGNORED_ERRORS:
                 pass
 
         if success is False:

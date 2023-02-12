@@ -1,23 +1,11 @@
 from coincurve import verify_signature as _vs
 
-from ufobit.base58 import b58decode_check, b58encode_check
-from ufobit.crypto import ripemd160_sha256
-from ufobit.curve import x_to_y
+from .base58 import b58decode_check, b58encode_check
+from .crypto import ripemd160_sha256, sha256
+from .curve import x_to_y
+from .constants import *
 
-MAIN_PUBKEY_HASH = b'\x1b'
-MAIN_SCRIPT_HASH = b'\x05'
-MAIN_PRIVATE_KEY = b'\x9b'
-MAIN_BIP32_PUBKEY = b'\x04\x88\xb2\x1e'
-MAIN_BIP32_PRIVKEY = b'\x04\x88\xad\xe4'
-TEST_PUBKEY_HASH = b'\x6f'
-TEST_SCRIPT_HASH = b'\xc4'
-TEST_PRIVATE_KEY = b'\xef'
-TEST_BIP32_PUBKEY = b'\x045\x87\xcf'
-TEST_BIP32_PRIVKEY = b'\x045\x83\x94'
-PUBLIC_KEY_UNCOMPRESSED = b'\x04'
-PUBLIC_KEY_COMPRESSED_EVEN_Y = b'\x02'
-PUBLIC_KEY_COMPRESSED_ODD_Y = b'\x03'
-PRIVATE_KEY_COMPRESSED_PUBKEY = b'\x01'
+from .utils import int_to_unknown_bytes
 
 
 def verify_sig(signature, data, public_key):
@@ -41,11 +29,14 @@ def address_to_public_key_hash(address):
 
 
 def get_version(address):
-    version = b58decode_check(address)[:1]
+    segwit_versions = {'bc': MAIN_PUBKEY_HASH, 'tb': TEST_PUBKEY_HASH}
+    version = segwit_versions.get(address[0:2])
+    if not version:
+        version = b58decode_check(address)[:1]
 
-    if version == MAIN_PUBKEY_HASH:
+    if version == MAIN_PUBKEY_HASH or version == MAIN_SCRIPT_HASH:
         return 'main'
-    elif version == TEST_PUBKEY_HASH:
+    elif version == TEST_PUBKEY_HASH or version == TEST_SCRIPT_HASH:
         return 'test'
     else:
         raise ValueError('{} does not correspond to a mainnet nor '
@@ -53,7 +44,6 @@ def get_version(address):
 
 
 def bytes_to_wif(private_key, version='main', compressed=False):
-
     if version == 'test':
         prefix = TEST_PRIVATE_KEY
     else:
@@ -70,7 +60,6 @@ def bytes_to_wif(private_key, version='main', compressed=False):
 
 
 def wif_to_bytes(wif):
-
     private_key = b58decode_check(wif)
 
     version = private_key[:1]
@@ -93,7 +82,6 @@ def wif_to_bytes(wif):
 
 
 def wif_checksum_check(wif):
-
     try:
         decoded = b58decode_check(wif)
     except ValueError:
@@ -106,7 +94,6 @@ def wif_checksum_check(wif):
 
 
 def public_key_to_address(public_key, version='main'):
-
     if version == 'test':
         version = TEST_PUBKEY_HASH
     else:
@@ -120,8 +107,72 @@ def public_key_to_address(public_key, version='main'):
     return b58encode_check(version + ripemd160_sha256(public_key))
 
 
-def public_key_to_coords(public_key):
+def public_key_to_segwit_address(public_key, version='main'):
+    if version == 'test':
+        version = TEST_SCRIPT_HASH
+    else:
+        version = MAIN_SCRIPT_HASH
 
+    length = len(public_key)
+
+    if length != 33:
+        raise ValueError(
+            '{} is an invalid length for a public key. Segwit only uses compressed public keys'.format(length))
+
+    return b58encode_check(version + ripemd160_sha256(b'\x00\x14' + ripemd160_sha256(public_key)))
+
+
+def multisig_to_redeemscript(public_keys, m):
+    # public_keys must be provided as a list
+    from bit_sw.utils import hex_to_bytes, script_push
+
+    if m > 16:
+        raise ValueError('More than the allowed maximum of 16 public keys cannot be used.')
+
+    redeemscript = int_to_unknown_bytes(m + 80)
+
+    for key in public_keys:
+        key_byte = hex_to_bytes(key)
+        length = len(key_byte)
+
+        if length not in (33, 65):
+            raise ValueError('At least one of the provided public keys is of invalid length {}.'.format(length))
+
+        redeemscript += script_push(length) + key_byte
+
+    redeemscript += int_to_unknown_bytes(len(
+        public_keys) + 80) + b'\xae'  # Only works for n = len(public_keys) < 17. OK due to P2SH script-length limitation.
+
+    if len(redeemscript) > 520:
+        raise ValueError('The redeemScript exceeds the allowed 520-byte limitation with the number of public keys.')
+
+    return redeemscript
+
+
+def multisig_to_address(public_keys, m, version='main'):
+    if version == 'test':
+        version = TEST_SCRIPT_HASH
+    else:
+        version = MAIN_SCRIPT_HASH
+
+    return b58encode_check(version + ripemd160_sha256(multisig_to_redeemscript(public_keys, m)))
+
+
+def multisig_to_segwit_address(public_keys, m, version='main'):
+    if version == 'test':
+        version = TEST_SCRIPT_HASH
+    else:
+        version = MAIN_SCRIPT_HASH
+
+    return b58encode_check(version + ripemd160_sha256(b'\x00\x20' + sha256(multisig_to_redeemscript(public_keys, m))))
+
+
+def segwit_scriptpubkey(witver, witprog):
+    """Construct a Segwit scriptPubKey for a given witness program."""
+    return bytes([witver + 0x50 if witver else 0, len(witprog)] + witprog)
+
+
+def public_key_to_coords(public_key):
     length = len(public_key)
 
     if length == 33:
@@ -136,7 +187,6 @@ def public_key_to_coords(public_key):
 
 
 def coords_to_public_key(x, y, compressed=True):
-
     if compressed:
         y = PUBLIC_KEY_COMPRESSED_ODD_Y if y & 1 else PUBLIC_KEY_COMPRESSED_EVEN_Y
         return y + x.to_bytes(32, 'big')

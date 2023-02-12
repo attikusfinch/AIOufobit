@@ -12,10 +12,10 @@ UFOBit: UFO made easy.
 
 -----
 
-UFOBit is Python's `fastest <https://ofek.github.io/bit/guide/intro.html#why-bit>`_
-Uniform Fiscal Object library and was designed from the beginning to feel intuitive, be
+AIOUFOBit is Python's `fastest <https://ofek.github.io/bit/guide/intro.html#why-bit>`_
+Async Uniform Fiscal Object library and was designed from the beginning to feel intuitive, be
 effortless to use, and have readable source code. It is heavily inspired by
-`Requests <https://github.com/requests/requests>`_ and
+`AioHttp <https://github.com/aio-libs/aiohttp>`_ and
 `Keras <https://github.com/keras-team/keras>`_. Based on Ofek's Bit code.
 
 **UFOBit is so easy to use, in fact, you can do this:**
@@ -23,23 +23,29 @@ effortless to use, and have readable source code. It is heavily inspired by
 .. code-block:: python
 
     >>> import ufobit
+    >>> import asyncio
     >>>
-    >>> ufobit.config['api_key'] = 'cryptoid api key'
-    >>> my_key = ufobit.Key(...)
-    >>> my_key.get_balance('ufo')
+    >>> async def get_balance(): 
+    >>>     wallet = ufobit.Key(...) # set your private key
+    >>>     balance = await wallet.get_balance('ufo')
+    >>>     print(balance)
+    >>>
+    >>> if __name__ == '__main__':
+    >>>     asyncio.run(get_balance())
     '378.623'
     >>>
-    >>> outputs = [
-    >>>     ('Bz9rtnrFgjEC6Tv6CWpHz8EYFwJJJnwwjq', 25, 'ufo'),
-    >>>     ('Bu6rsw6ineEDUuH1Ph5CRzVqTt7s3skgDq', 50, 'satoshi'),
-    >>>     ('C5urCiXUyAnsrnKf7RaB2oBpdKxo51Vkpc', 0.02, 'usd'),
-    >>>     ('CFhf3Pk3T3MhFvAidRZJ9cxkJ8DurLYmo1', 1, 'rub'),
-    >>> ]
+    >>> async def get_output():
+    >>>     outputs = [
+    >>>         ('Bz9rtnrFgjEC6Tv6CWpHz8EYFwJJJnwwjq', 25, 'ufo'),
+    >>>         ('Bu6rsw6ineEDUuH1Ph5CRzVqTt7s3skgDq', 50, 'satoshi'),
+    >>>         ('C5urCiXUyAnsrnKf7RaB2oBpdKxo51Vkpc', 0.02, 'usd'),
+    >>>         ('CFhf3Pk3T3MhFvAidRZJ9cxkJ8DurLYmo1', 1, 'rub'),
+    >>>     ]
     >>>
-    >>> my_key.send(outputs)
+    >>>     tx_id = await wallet.send(outputs)
     'cfecc199a5c6e6bc24610366e8eda36571162e9e3f7c419f0b6095c257acc5fc'
     >>>
-    >>> ufobit.network.services.UFO.get_tx('cfecc199a5c6e6bc24610366e8eda36571162e9e3f7c419f0b6095c257acc5fc')
+    >>> await ufobit.network.services.UFO.get_tx('cfecc199a5c6e6bc24610366e8eda36571162e9e3f7c419f0b6095c257acc5fc')
     {
     "hash": "cfecc199a5c6e6bc24610366e8eda36571162e9e3f7c419f0b6095c257acc5fc",
     "block": 1275211,
@@ -112,6 +118,7 @@ Features
 - Compressed public keys by default
 - Multiple representations of private keys; WIF, PEM, DER, etc.
 - Standard P2PKH transactions
+- Fully async
 
 If you are intrigued, continue reading. If not, continue all the same!
 
@@ -123,7 +130,7 @@ and Windows and supports Python 3.5+ and PyPy3.5-v5.7.1+. ``pip`` >= 8.1.2 is re
 
 .. code-block:: bash
 
-    $ pip install ufobit
+    $ pip install aioufobit
 
 Documentation
 -------------

@@ -1,13 +1,16 @@
 import json
 
-from ufobit.crypto import ECPrivateKey
-from ufobit.curve import Point
-from ufobit.format import (
-    bytes_to_wif, public_key_to_address, public_key_to_coords, wif_to_bytes
+from .crypto import ECPrivateKey, ripemd160_sha256
+from .curve import Point
+from .format import (
+    bytes_to_wif, public_key_to_address, public_key_to_coords, wif_to_bytes, address_to_public_key_hash, public_key_to_segwit_address
 )
-from ufobit.network import NetworkAPI, get_fee_cached, ufoshi_to_currency_cached
-from ufobit.network.meta import Unspent
-from ufobit.transaction import calc_txid, create_p2pkh_transaction, sanitize_tx_data
+from .network import NetworkAPI, get_fee_cached, ufoshi_to_currency_cached
+from .network.meta import Unspent
+from .transaction import (
+    create_new_transaction, sanitize_tx_data, OP_CHECKSIG, OP_DUP, OP_EQUALVERIFY, OP_HASH160, OP_PUSH_20
+    )
+
 
 
 def wif_to_key(wif):
@@ -133,10 +136,16 @@ class PrivateKey(BaseKey):
         super().__init__(wif=wif)
 
         self._address = None
+        self._sw_address = None
+        self._scriptcode = None
+        self._sw_scriptcode = None
 
         self.balance = 0
         self.unspents = []
         self.transactions = []
+
+        self.version = 'main'
+        self.instance = 'PrivateKey'
 
     @property
     def address(self):
@@ -144,6 +153,28 @@ class PrivateKey(BaseKey):
         if self._address is None:
             self._address = public_key_to_address(self._public_key, version='main')
         return self._address
+
+    @property
+    def sw_address(self):
+        """The public segwit nested in P2SH address you share with others to receive funds."""
+        if self._sw_address is None and self.is_compressed():  # Only make segwit address if public key is compressed
+            # See: https://github.com/bitcoin/bips/blob/master/bip-0141.mediawiki#New_script_semantics and
+            #      https://github.com/bitcoin/bips/blob/master/bip-0143.mediawiki#Restrictions_on_public_key_type
+            self._sw_address = public_key_to_segwit_address(self._public_key, version='main')
+        return self._sw_address
+
+    @property
+    def scriptcode(self):
+        self._scriptcode = (OP_DUP + OP_HASH160 + OP_PUSH_20 +
+                            address_to_public_key_hash(self.address) +
+                            OP_EQUALVERIFY + OP_CHECKSIG)
+        return self._scriptcode
+
+    @property
+    def sw_scriptcode(self):
+        self._sw_scriptcode = (b'\x00' + b'\x14' +
+                               ripemd160_sha256(self.public_key))
+        return self._sw_scriptcode
 
     def to_wif(self):
         return bytes_to_wif(
@@ -161,7 +192,13 @@ class PrivateKey(BaseKey):
         """
         return ufoshi_to_currency_cached(self.balance, currency)
 
-    def get_balance(self, currency='ufoshi'):
+    def get_address(self):
+        return self.address
+
+    def get_sw_address(self):
+        return self.sw_address
+
+    async def get_balance(self, currency='ufoshi'):
         """Fetches the current balance by calling
         :func:`~bit.PrivateKey.get_unspents` and returns it using
         :func:`~bit.PrivateKey.balance_as`.
@@ -170,24 +207,29 @@ class PrivateKey(BaseKey):
         :type currency: ``str``
         :rtype: ``str``
         """
-        self.get_unspents()
+        await self.get_unspents()
         return self.balance_as(currency)
 
-    def get_unspents(self):
+    async def get_unspents(self):
         """Fetches all available unspent transaction outputs.
 
         :rtype: ``list`` of :class:`~bit.network.meta.Unspent`
         """
-        self.unspents[:] = NetworkAPI.get_unspent(self.address)
+        self.unspents[:] = (await NetworkAPI.get_unspent(self.address))
+        if self.is_compressed():  # Only check segwit balance if public key is compressed
+            sw_unspents = (await NetworkAPI.get_unspent(self.sw_address))
+            self.unspents += sw_unspents
         self.balance = sum(unspent.amount for unspent in self.unspents)
         return self.unspents
 
-    def get_transactions(self):
+    async def get_transactions(self):
         """Fetches transaction history.
 
         :rtype: ``list`` of ``str`` transaction IDs
         """
-        self.transactions[:] = NetworkAPI.get_transactions(self.address)
+        self.transactions[:] = await NetworkAPI.get_transactions(self.address)
+        if self.is_compressed():  # Only check segwit transactions if public key is compressed
+            self.transactions += await NetworkAPI.get_transactions(self.sw_address)
         return self.transactions
 
     def create_transaction(self, outputs, fee=None, leftover=None, combine=True,
@@ -231,12 +273,13 @@ class PrivateKey(BaseKey):
             leftover or self.address,
             combine=combine,
             message=message,
-            compressed=self.is_compressed()
+            compressed=self.is_compressed(),
+            version='main'
         )
 
-        return create_p2pkh_transaction(self, unspents, outputs)
+        return create_new_transaction(self, unspents, outputs)
 
-    def send(self, outputs, fee=None, leftover=None, combine=True,
+    async def send(self, outputs, fee=None, leftover=None, combine=True,
              message=None, unspents=None):  # pragma: no cover
         """Creates a signed P2PKH transaction and attempts to broadcast it on
         the blockchain. This accepts the same arguments as
@@ -276,12 +319,12 @@ class PrivateKey(BaseKey):
             outputs, fee=fee, leftover=leftover, combine=combine, message=message, unspents=unspents
         )
 
-        NetworkAPI.broadcast_tx(tx_hex)
+        txid = await NetworkAPI.broadcast_tx(tx_hex)
 
-        return calc_txid(tx_hex)
+        return txid
 
     @classmethod
-    def prepare_transaction(cls, address, outputs, compressed=True, fee=None, leftover=None,
+    async def prepare_transaction(cls, address, outputs, compressed=True, fee=None, leftover=None,
                             combine=True, message=None, unspents=None):  # pragma: no cover
         """Prepares a P2PKH transaction for offline signing.
 
@@ -320,13 +363,14 @@ class PrivateKey(BaseKey):
         :rtype: ``str``
         """
         unspents, outputs = sanitize_tx_data(
-            unspents or NetworkAPI.get_unspent(address),
+            unspents or (await NetworkAPI.get_unspent(address)),
             outputs,
             fee or get_fee_cached(),
             leftover or address,
             combine=combine,
             message=message,
-            compressed=compressed
+            compressed=compressed,
+            version='main'
         )
 
         data = {
@@ -350,7 +394,7 @@ class PrivateKey(BaseKey):
         unspents = [Unspent.from_dict(unspent) for unspent in data['unspents']]
         outputs = data['outputs']
 
-        return create_p2pkh_transaction(self, unspents, outputs)
+        return create_new_transaction(self, unspents, outputs)
 
     @classmethod
     def from_hex(cls, hexed):

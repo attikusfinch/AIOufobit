@@ -7,9 +7,9 @@ with open('ufobit/__init__.py', 'r') as f:
             break
 
 setup(
-    name='ufobit',
+    name='AIOufobit',
     version=version,
-    description='UFO made easy.',
+    description='Async UFO made easy.',
     long_description=open('README.rst', 'r').read(),
     author='Ofek Lev',
     author_email='ofekmeister@gmail.com',
@@ -20,6 +20,7 @@ setup(
     license='MIT',
 
     keywords=(
+        'async',
         'ufo',
         'bitcoin',
         'cryptocurrency',
@@ -37,11 +38,12 @@ setup(
         'Operating System :: OS Independent',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: Implementation :: CPython',
         'Programming Language :: Python :: Implementation :: PyPy'
     ),
 
-    install_requires=('coincurve>=4.3.0', 'requests'),
+    install_requires=('coincurve>=4.3.0', 'aiohttp', 'asyncio'),
     extras_require={
         'cli': ('appdirs', 'click', 'privy', 'tinydb'),
         'cache': ('lmdb', ),
