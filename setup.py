@@ -30,7 +30,7 @@ setup(
     ),
 
     classifiers=(
-        'Development Status :: 4 - Beta',
+        'Development Status :: 8 - Beta',
         'Intended Audience :: Developers',
         'Intended Audience :: End Users/Desktop',
         'License :: OSI Approved :: MIT License',
