@@ -130,7 +130,9 @@ and Windows and supports Python 3.5+ and PyPy3.5-v5.7.1+. ``pip`` >= 8.1.2 is re
 
 .. code-block:: bash
 
-    $ pip install aioufobit
+    $ pip install git+https://github.com/attikusfinch/AIOufobit.git
+    
+    $ pip install aioufobit - soon
 
 Documentation
 -------------
