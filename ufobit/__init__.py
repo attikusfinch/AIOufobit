@@ -4,4 +4,4 @@ from .network.rates import SUPPORTED_CURRENCIES, set_rate_cache_time
 from .network.services import set_service_timeout
 from .wallet import Key, PrivateKey, wif_to_key
 
-__version__ = '0.8.3'
+__version__ = '0.8.4'
