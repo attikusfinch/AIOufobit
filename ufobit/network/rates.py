@@ -2,6 +2,7 @@ from collections import OrderedDict
 from decimal import ROUND_DOWN
 from functools import wraps
 from time import time
+from ufobit.constants import UFO, UFOSHI
 
 from .api import API
 from ufobit.utils import Decimal
@@ -11,9 +12,6 @@ DEFAULT_CACHE_TIME = 60
 # Constant for use in deriving exchange
 # rates when given in terms of 1 BTC.
 ONE = Decimal(1)
-
-SATOSHI = 1
-BTC = 10 ** 8
 
 SUPPORTED_CURRENCIES = OrderedDict([
     ('ufoshi', 'Ufoshi'),
@@ -41,11 +39,10 @@ def set_rate_cache_time(seconds):
 
 
 def ufoshi_to_ufoshi():
-    return SATOSHI
-
+    return UFOSHI
 
 def ufo_to_ufoshi():
-    return BTC
+    return UFO
 
 
 class RatesAPI(API):
@@ -60,23 +57,23 @@ class RatesAPI(API):
         response = await self.make_request(self.MAIN_ENDPOINT, params={'convert': currency})
         response = await response.json()
         rate = response[0]['price_' + currency.lower()]
-        return int(ONE / Decimal(rate) * BTC)
+        return int(ONE / Decimal(rate) * UFO)
 
     @classmethod
-    def usd_to_ufoshi(self):
-        return self.currency_to_ufoshi('usd')
+    async def usd_to_ufoshi(self):
+        return await self.currency_to_ufoshi('usd')
 
     @classmethod
-    def rub_to_ufoshi(self):
-        return self.currency_to_ufoshi('rub')
+    async def rub_to_ufoshi(self):
+        return await self.currency_to_ufoshi('rub')
 
     @classmethod
-    def btc_to_ufoshi(self):
-        return self.currency_to_ufoshi('btc')
+    async def btc_to_ufoshi(self):
+        return await self.currency_to_ufoshi('btc')
 
     @classmethod
-    def satoshi_to_ufoshi(self):
-        return self.currency_to_ufoshi('btc') / Decimal(BTC)
+    async def satoshi_to_ufoshi(self):
+        return await self.currency_to_ufoshi('btc') / Decimal(UFO)
 
 
 EXCHANGE_RATES = {
@@ -89,7 +86,7 @@ EXCHANGE_RATES = {
 }
 
 
-def currency_to_ufoshi(amount, currency):
+async def currency_to_ufoshi(amount, currency):
     """Converts a given amount of currency to the equivalent number of
     ufoshi. The amount can be either an int, float, or string as long as
     it is a valid input to :py:class:`decimal.Decimal`.
@@ -101,7 +98,6 @@ def currency_to_ufoshi(amount, currency):
     """
     ufoshis = EXCHANGE_RATES[currency]()
     return int(ufoshis * Decimal(amount))
-
 
 class CachedRate:
     __slots__ = ('satoshis', 'last_update')
@@ -170,7 +166,6 @@ def ufoshi_to_currency(num, currency):
             rounding=ROUND_DOWN
         ).normalize()
     )
-
 
 def ufoshi_to_currency_cached(num, currency):
     """Converts a given number of ufoshi to another currency as a formatted

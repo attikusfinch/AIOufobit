@@ -1,10 +1,9 @@
-import re
-from functools import wraps
-
 import aiohttp
 from .api import API
 
 from .meta import Unspent
+
+from .rpc import RPCHost
 
 DEFAULT_TIMEOUT = 10
 
@@ -175,3 +174,43 @@ class NetworkAPI:
                                   'Unspents were already used.')
 
         raise ConnectionError('All APIs are unreachable.')
+
+    @classmethod
+    def connect_to_node(self, user, password, host='localhost', port=8332, use_https=False, testnet=False, path=""):
+        """Connect to a remote Bitcoin node instead of using web APIs.
+        Allows to connect to a testnet and mainnet Bitcoin node simultaneously.
+        :param user: The RPC user to a Bitcoin node
+        :type user: ``str``
+        :param password: The RPC password to a Bitcoin node
+        :type password: ``str``
+        :param host: The host to a Bitcoin node
+        :type host: ``str``
+        :param port: The port to a Bitcoin node
+        :type port: ``int``
+        :param use_https: Connect to the Bitcoin node via HTTPS. Either a
+            boolean, in which case it controls whether we connect to the node
+            via HTTP or HTTPS, or a string, in which case we connect via HTTPS
+            and it must be a path to the CA bundle to use. Defaults to False.
+        :type use_https: ``bool`` or ``string``
+        :param testnet: Defines if the node should be used for testnet
+        :type testnet: ``bool``
+        :returns: The node exposing its RPCs for direct interaction.
+        :rtype: ``RPCHost``
+        """
+        node = RPCHost(user=user, password=password, host=host, port=port, use_https=use_https, path=path)
+
+        # Inject remote node into NetworkAPI
+        if testnet is False:
+            self.GET_BALANCE_MAIN = [node.get_balance]
+            self.GET_TRANSACTIONS_MAIN = [node.get_transactions]
+            self.GET_TRANSACTION_BY_ID_MAIN = [node.get_transaction_by_id]
+            self.GET_UNSPENT_MAIN = [node.get_unspent]
+            self.BROADCAST_TX_MAIN = [node.broadcast_tx]
+        else:
+            self.GET_BALANCE_TEST = [node.get_balance_testnet]
+            self.GET_TRANSACTIONS_TEST = [node.get_transactions_testnet]
+            self.GET_TRANSACTION_BY_ID_TEST = [node.get_transaction_by_id_testnet]
+            self.GET_UNSPENT_TEST = [node.get_unspent_testnet]
+            self.BROADCAST_TX_TEST = [node.broadcast_tx_testnet]
+
+        return node

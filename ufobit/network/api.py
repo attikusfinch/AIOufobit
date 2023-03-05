@@ -30,3 +30,23 @@ class API(object):
                 return await response.text()
 
             return response
+
+class RPCAPI(object):
+    async def make_request(self, method, args=None):
+        async with aiohttp.ClientSession() as session:
+            session.verify_ssl = self.http_verify
+            
+            response = await session.post(
+                self._url,
+                headers=self._headers,
+                data=json.dumps(
+                        {
+                        "method": method, 
+                        "params": args or [], 
+                        "jsonrpc": "2.0"
+                        }
+                    ),
+                timeout=aiohttp.ClientTimeout(total=10),
+            )
+            
+            return response

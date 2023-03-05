@@ -13,8 +13,6 @@ PUBLIC_KEY_COMPRESSED_EVEN_Y = b'\x02'
 PUBLIC_KEY_COMPRESSED_ODD_Y = b'\x03'
 PRIVATE_KEY_COMPRESSED_PUBKEY = b'\x01'
 
-
-
 VERSION_1 = 0x01.to_bytes(4, byteorder='little')
 SEQUENCE = 0xffffffff.to_bytes(4, byteorder='little')
 LOCK_TIME = 0x00.to_bytes(4, byteorder='little')
@@ -31,3 +29,8 @@ OP_RETURN = b'\x6a'
 OP_EQUAL = b'\x87'
 
 MESSAGE_LIMIT = 40
+
+UFOSHI = 1
+uUFO = 10 ** 2
+mUFO = 10 ** 5
+UFO = 10 ** 8
