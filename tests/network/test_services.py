@@ -1,7 +1,7 @@
 import pytest
 
-import ufobit
-from ufobit.network.services import (
+import aioufobit
+from aioufobit.network.services import (
     NetworkAPI, set_service_timeout
 )
 from tests.utils import (
@@ -29,9 +29,9 @@ def all_items_equal(seq):
 
 
 def test_set_service_timeout():
-    original = ufobit.network.services.DEFAULT_TIMEOUT
+    original = aioufobit.network.services.DEFAULT_TIMEOUT
     set_service_timeout(3)
-    updated = ufobit.network.services.DEFAULT_TIMEOUT
+    updated = aioufobit.network.services.DEFAULT_TIMEOUT
 
     assert original != updated
     assert updated == 3

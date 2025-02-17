@@ -1,13 +1,13 @@
 from time import sleep, time
 
-import ufobit
-from ufobit.network.fees import get_fee, get_fee_cached, set_fee_cache_time
+import aioufobit
+from aioufobit.network.fees import get_fee, get_fee_cached, set_fee_cache_time
 
 
 def test_set_fee_cache_time():
-    original = ufobit.network.fees.DEFAULT_CACHE_TIME
+    original = aioufobit.network.fees.DEFAULT_CACHE_TIME
     set_fee_cache_time(30)
-    updated = ufobit.network.fees.DEFAULT_CACHE_TIME
+    updated = aioufobit.network.fees.DEFAULT_CACHE_TIME
 
     assert original != updated
     assert updated == 30

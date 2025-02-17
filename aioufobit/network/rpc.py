@@ -7,10 +7,10 @@ from .api import RPCAPI
 import logging
 from decimal import Decimal, getcontext
 
-from ufobit.constants import UFO, UFOSHI
-from ufobit.network import currency_to_ufoshi
-from ufobit.network.meta import Unspent
-from ufobit.exceptions import UfoNodeException
+from aioufobit.constants import UFO, UFOSHI
+from aioufobit.network import currency_to_ufoshi
+from aioufobit.network.meta import Unspent
+from aioufobit.exceptions import UfoNodeException
 
 class RPCHost(RPCAPI):
     def __init__(self, user: str, password: str, host: str, port: int, use_https: bool):

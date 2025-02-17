@@ -1,10 +1,10 @@
-from ufobit.network.rpc import RPCHost
-import ufobit
+from aioufobit.network.rpc import RPCHost
+import aioufobit
 import asyncio
 
 rpc = RPCHost("ufomoon", "ufomoon", "127.0.0.1", 8444, False)
 
-wallet = ufobit.Key("YOUR_PRIVATE_KEY")
+wallet = aioufobit.Key("YOUR_PRIVATE_KEY")
 
 outputs = [ # destination address
         ('UgdMm8b2WpGX5EdFxSry9VuJnyY8SWsZh3', 100, 'ufo'),

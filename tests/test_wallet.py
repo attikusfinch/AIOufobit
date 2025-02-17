@@ -4,11 +4,11 @@ import time
 
 import pytest
 
-from ufobit.crypto import ECPrivateKey
-from ufobit.curve import Point
-from ufobit.format import verify_sig
-from ufobit.network import NetworkAPI
-from ufobit.wallet import BaseKey, Key, PrivateKey, PrivateKeyTestnet, wif_to_key
+from aioufobit.crypto import ECPrivateKey
+from aioufobit.curve import Point
+from aioufobit.format import verify_sig
+from aioufobit.network import NetworkAPI
+from aioufobit.wallet import BaseKey, Key, PrivateKey, PrivateKeyTestnet, wif_to_key
 from .samples import (
     BITCOIN_ADDRESS, BITCOIN_ADDRESS_TEST, PRIVATE_KEY_BYTES, PRIVATE_KEY_DER,
     PRIVATE_KEY_HEX, PRIVATE_KEY_NUM, PRIVATE_KEY_PEM,

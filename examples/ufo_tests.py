@@ -1,7 +1,7 @@
-import ufobit
+import aioufobit
 import asyncio
 
-wallet = ufobit.Key("YOUR_PRIVATE_KEY")
+wallet = aioufobit.Key("YOUR_PRIVATE_KEY")
 
 outputs = [ # destination address
         ('UgdMm8b2WpGX5EdFxSry9VuJnyY8SWsZh3', 100, 'ufo'),

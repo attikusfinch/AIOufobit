@@ -1,11 +1,11 @@
-UFOBit: UFO made easy.
+AIOUFOBit: UFO made easy.
 =======================
 
-.. image:: https://img.shields.io/pypi/v/ufobit.svg?style=flat-square
-    :target: https://pypi.org/project/ufobit
+.. image:: https://img.shields.io/pypi/v/aioufobit.svg?style=flat-square
+    :target: https://pypi.org/project/aioufobit
 
-.. image:: https://img.shields.io/pypi/pyversions/ufobit.svg?style=flat-square
-    :target: https://pypi.org/project/ufobit
+.. image:: https://img.shields.io/pypi/pyversions/aioufobit.svg?style=flat-square
+    :target: https://pypi.org/project/aioufobit
 
 .. image:: https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square
     :target: https://en.wikipedia.org/wiki/MIT_License
@@ -18,11 +18,11 @@ effortless to use, and have readable source code. It is heavily inspired by
 `AioHttp <https://github.com/aio-libs/aiohttp>`_ and
 `Keras <https://github.com/keras-team/keras>`_. Based on Ofek's Bit code.
 
-**UFOBit is so easy to use, in fact, you can do this:**
+**AIOUFOBit is so easy to use, in fact, you can do this:**
 
 .. code-block:: python
 
-    >>> import ufobit
+    >>> import aioufobit
     >>> import asyncio
     >>>
     >>> async def get_balance(): 
@@ -45,7 +45,7 @@ effortless to use, and have readable source code. It is heavily inspired by
     >>>     tx_id = await wallet.send(outputs)
     'cfecc199a5c6e6bc24610366e8eda36571162e9e3f7c419f0b6095c257acc5fc'
     >>>
-    >>> await ufobit.network.services.UFO.get_tx('cfecc199a5c6e6bc24610366e8eda36571162e9e3f7c419f0b6095c257acc5fc')
+    >>> await aioufobit.network.services.UFO.get_tx('cfecc199a5c6e6bc24610366e8eda36571162e9e3f7c419f0b6095c257acc5fc')
     {
     "hash": "cfecc199a5c6e6bc24610366e8eda36571162e9e3f7c419f0b6095c257acc5fc",
     "block": 1275211,
@@ -138,7 +138,7 @@ Documentation
 -------------
 
 Docs are `hosted by Github Pages`_ and are automatically built and published
-by Travis after every successful commit to UFOBit's ``master`` branch.
+by Travis after every successful commit to AIOUFOBit's ``master`` branch.
 
 Credits
 -------
@@ -148,7 +148,7 @@ Credits
 - `arubi`_ in #bitcoin for helping me understand transaction gotchas
 - `fuzeman`_ for bestowing me the name ``bit`` on the `Python Package Index`_
 
-.. _PyPI: https://pypi.org/project/ufobit
+.. _PyPI: https://pypi.org/project/aioufobit
 .. _hosted by Github Pages: https://ofek.github.io/bit
 .. _Gregory Maxwell: https://github.com/gmaxwell
 .. _ECC: https://en.wikipedia.org/wiki/Elliptic_curve_cryptography

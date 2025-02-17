@@ -1,7 +1,7 @@
 import pytest
 
-from ufobit.base58 import b58decode, b58decode_check, b58encode, b58encode_check
-from ufobit.format import MAIN_PUBKEY_HASH
+from aioufobit.base58 import b58decode, b58decode_check, b58encode, b58encode_check
+from aioufobit.format import MAIN_PUBKEY_HASH
 from .samples import BINARY_ADDRESS, BITCOIN_ADDRESS, PUBKEY_HASH
 
 

@@ -21,7 +21,7 @@
 # import sys
 # sys.path.insert(0, os.path.abspath('.'))
 
-from ufobit import __version__
+from aioufobit import __version__
 
 
 # -- General configuration ------------------------------------------------

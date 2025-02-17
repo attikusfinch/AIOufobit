@@ -1,18 +1,18 @@
 from time import sleep, time
 
-import ufobit
-from ufobit.network.rates import (
+import aioufobit
+from aioufobit.network.rates import (
     RatesAPI, btc_to_satoshi, currency_to_satoshi, currency_to_satoshi_cached,
     mbtc_to_satoshi, satoshi_to_currency, satoshi_to_currency_cached,
     satoshi_to_satoshi, set_rate_cache_time, ubtc_to_satoshi
 )
-from ufobit.utils import Decimal
+from aioufobit.utils import Decimal
 
 
 def test_set_rate_cache_time():
-    original = ufobit.network.rates.DEFAULT_CACHE_TIME
+    original = aioufobit.network.rates.DEFAULT_CACHE_TIME
     set_rate_cache_time(30)
-    updated = ufobit.network.rates.DEFAULT_CACHE_TIME
+    updated = aioufobit.network.rates.DEFAULT_CACHE_TIME
 
     assert original != updated
     assert updated == 30

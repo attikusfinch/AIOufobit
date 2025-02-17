@@ -1,4 +1,4 @@
-from ufobit.network.meta import Unspent
+from aioufobit.network.meta import Unspent
 
 
 class TestUnspent:

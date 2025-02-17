@@ -1,6 +1,6 @@
 import click
 
-from ufobit.keygen import generate_matching_address
+from aioufobit.keygen import generate_matching_address
 
 
 @click.group(invoke_without_command=True)

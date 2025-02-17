@@ -2,10 +2,10 @@ from collections import OrderedDict
 from decimal import ROUND_DOWN
 from functools import wraps
 from time import time
-from ufobit.constants import UFO, UFOSHI
+from aioufobit.constants import UFO, UFOSHI
 
 from .api import API
-from ufobit.utils import Decimal
+from aioufobit.utils import Decimal
 
 DEFAULT_CACHE_TIME = 60
 

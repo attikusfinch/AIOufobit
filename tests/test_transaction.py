@@ -1,13 +1,13 @@
 import pytest
 
-from ufobit.exceptions import InsufficientFunds
-from ufobit.network.meta import Unspent
-from ufobit.transaction import (
+from aioufobit.exceptions import InsufficientFunds
+from aioufobit.network.meta import Unspent
+from aioufobit.transaction import (
     TxIn, calc_txid, create_p2pkh_transaction, construct_input_block,
     construct_output_block, estimate_tx_fee, sanitize_tx_data
 )
-from ufobit.utils import hex_to_bytes
-from ufobit.wallet import PrivateKey
+from aioufobit.utils import hex_to_bytes
+from aioufobit.wallet import PrivateKey
 from .samples import WALLET_FORMAT_MAIN
 
 

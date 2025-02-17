@@ -1,6 +1,6 @@
 from setuptools import find_packages, setup
 
-with open('ufobit/__init__.py', 'r') as f:
+with open('aioufobit/__init__.py', 'r') as f:
     for line in f:
         if line.startswith('__version__'):
             version = line.strip().split('= ')[1].strip("'")
@@ -53,7 +53,7 @@ setup(
     packages=find_packages(),
     entry_points={
         'console_scripts': (
-            'ufobit = ufobit.cli:bit',
+            'aioufobit = aioufobit.cli:bit',
         ),
     },
 )

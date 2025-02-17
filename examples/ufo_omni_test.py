@@ -1,10 +1,10 @@
-from ufobit.network.rpc import OMNIRPCHost
-import ufobit
+from aioufobit.network.rpc import OMNIRPCHost
+import aioufobit
 import asyncio
 
 rpc = OMNIRPCHost("ufomoon", "ufomoon", "127.0.0.1", 8444, False)
 
-wallet = ufobit.Key("YOUR_PRIVATE_KEY")
+wallet = aioufobit.Key("YOUR_PRIVATE_KEY")
 
 async def create_token():
     fixed = await rpc.create_token(
